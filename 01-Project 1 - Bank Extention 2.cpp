@@ -39,6 +39,16 @@ enum enMainMenueOptions
 	eLogout = 8
 };
 
+enum enManageUsersMenueOptions
+{
+	eListUsers = 1,
+	eAddNewUser = 2,
+	eDeleteUser = 3,
+	eUpdateUser = 4,
+	eFindUser = 5,
+	eMainMenueUsers = 6
+};
+
 enum enUserPermissions
 {
 	eAll = -1,
@@ -62,6 +72,8 @@ enum enTransactionMenue
 void ShowMainMenueScreen();
 void GoBackToMainMenue();
 void GoBackToTransactionMenueScreen();
+void ShowMangaeUsersMenueScreen();
+void GoBackToManageUsersMenueScreen();
 
 enMainMenueOptions ReadMainMenueScreen()
 {
@@ -133,7 +145,7 @@ sClient ConvertLineToRecord(string stLine, string Seperator = "#//#")
 
 }
 
-vector <sClient> LoadDatFromFile(string FileName)
+vector <sClient> LoadDataFromFile(string FileName)
 {
 	vector <sClient> vClients;
 	fstream Myfile;
@@ -185,7 +197,7 @@ void PrintClientRecordinOneLine(sClient Client)
 
 void PrintAllClientData(vector <sClient> vClients)
 {
-	cout << "Client list (" << vClients.size() << ") Client(s)." << endl;
+	cout << "                                      Client list (" << vClients.size() << ") Client(s)." << endl;
 
 	cout << "\n_______________________________________________________";
 	cout << "_________________________________________________\n" << endl;
@@ -215,7 +227,7 @@ void PrintAllClientData(vector <sClient> vClients)
 
 void ShowAllClientsScreen()
 {
-	vector <sClient> vClients = LoadDatFromFile(ClientsFileName);
+	vector <sClient> vClients = LoadDataFromFile(ClientsFileName);
 
 	PrintAllClientData(vClients);
 }
@@ -296,7 +308,7 @@ void AddNewClient(vector <sClient> & vClient)
 
 void ShowAddNewClientScreen()
 {
-	vector <sClient> vClients = LoadDatFromFile(ClientsFileName);
+	vector <sClient> vClients = LoadDataFromFile(ClientsFileName);
 
 
 	system("cls");
@@ -374,7 +386,7 @@ void DeleteClientFromFile(vector <sClient>& vClients)
 
 void ShowDeleteClientScreen()
 {
-	vector <sClient> vClients = LoadDatFromFile(ClientsFileName);
+	vector <sClient> vClients = LoadDataFromFile(ClientsFileName);
 
 
 	system("cls");
@@ -389,7 +401,7 @@ void ShowDeleteClientScreen()
 
 void ShowUpdateClientInfoScreen()
 {
-	vector <sClient> vClients = LoadDatFromFile(ClientsFileName);
+	vector <sClient> vClients = LoadDataFromFile(ClientsFileName);
 
 
 	system("cls");
@@ -434,7 +446,7 @@ void ShowUpdateClientInfoScreen()
 
 void ShowFindClientScreen()
 {
-	vector <sClient> vClients = LoadDatFromFile(ClientsFileName);
+	vector <sClient> vClients = LoadDataFromFile(ClientsFileName);
 
 
 	system("cls");
@@ -472,7 +484,7 @@ enTransactionMenue ReadTransactionMenueScreen()
 
 void ShowDepositScreen()
 {
-	vector <sClient> vClients = LoadDatFromFile(ClientsFileName);
+	vector <sClient> vClients = LoadDataFromFile(ClientsFileName);
 
 	system("cls");
 
@@ -518,12 +530,12 @@ void ShowDepositScreen()
 
 		SaveClientsDataToFile(ClientsFileName, vClients);
 	}
-	
+
 }
 
 void ShowWithdrawScreen()
 {
-	vector <sClient> vClients = LoadDatFromFile(ClientsFileName);
+	vector <sClient> vClients = LoadDataFromFile(ClientsFileName);
 
 
 	system("cls");
@@ -584,7 +596,7 @@ void ShowTotalBalanceScreen()
 
 	ShowAllClientsScreen();
 
-	vector <sClient> vClients = LoadDatFromFile(ClientsFileName);
+	vector <sClient> vClients = LoadDataFromFile(ClientsFileName);
 	int Balances = 0;
 
 	for (sClient& C : vClients)
@@ -641,16 +653,222 @@ void ShowTransactinsMenueScreen()
 	PerformTransactionMenueOption(ReadTransactionMenueScreen());
 }
 
-void ShowMangaeUsersScreen()
-{
-
-}
-
 void ShowEndScreen()
 {
 	cout << "\n-----------------------------------\n";
 	cout << "          Program Ends :-)           \n";
 	cout << "-----------------------------------\n";
+}
+
+void GoBackToMainMenue()
+{
+	cout << "\n\n Prees any key to go back to main menue...";
+	system("pause>0");
+	system("cls");
+	ShowMainMenueScreen();
+}
+
+void GoBackToTransactionMenueScreen()
+{
+	cout << "\n\n Press any key to go back to Transactions Menue... ";
+	system("pause>0");
+	system("cls");
+	ShowTransactinsMenueScreen();
+}
+
+// Users 
+
+string ConvertUsersRecordToLine(sUser User, string Seperator = "#//#")
+{
+	string stUSerRecord = "";
+
+	stUSerRecord += User.UserName + Seperator;
+	stUSerRecord += User.Password + Seperator;
+	stUSerRecord += to_string(User.Permissions);
+
+	return stUSerRecord;
+}
+
+sUser ConvertUsersLineToRecord(string stLine, string Seperator = "#//#")
+{
+
+	vector <string> vUserData = SplitString(stLine, Seperator);
+
+	sUser User;
+
+	User.UserName = vUserData[0];
+	User.Password = vUserData[1];
+	User.Permissions = stoi(vUserData[2]);
+
+	return User;
+
+}
+
+vector <sUser> LoadDataUsersFromFile(string FileName)
+{
+	vector <sUser> vUsers;
+	fstream Myfile;
+
+	Myfile.open(FileName, ios::in);
+
+	if (Myfile.is_open())
+	{
+		string line;
+		sUser User;
+
+		while (getline(Myfile, line))
+		{
+			User = ConvertUsersLineToRecord(line, "#//#");
+
+			vUsers.push_back(User);
+		}
+
+		Myfile.close();
+	}
+
+	return vUsers;
+}
+
+void SaveUsersDataToFile(string FileName, vector <sUser> vUsers)
+{
+	fstream MyFile;
+	MyFile.open(FileName, ios::out);
+
+	if (MyFile.is_open())
+	{
+		for (sUser& User: vUsers)
+		{
+			string DataLine = ConvertUsersRecordToLine(User, "#//#");
+			MyFile << DataLine << endl;
+		}
+		MyFile.close();
+	}
+}
+
+enUserPermissions ReadPermissionsToSet()
+{
+	char Answer = 'Y';
+
+	cout << "Do You want to give full accsess? Y/N?";
+	cin >> Answer;
+
+	if (toupper(Answer) == 'Y')
+	{
+		return enUserPermissions::eAll;
+	}
+
+	int Permissions = 0;
+
+	cout << "Show Client List? Y/N?";
+	cin >> Answer;
+
+	if (toupper(Answer) == 'Y')
+	{
+		Permissions |= enUserPermissions::pListClients;
+	}
+
+	cout << "Add New Client? Y/N?";
+	cin >> Answer;
+
+	if (toupper(Answer) == 'Y')
+	{
+		Permissions |= enUserPermissions::pAddNewClient;
+	}
+
+	cout << "Delete Client? Y/N?";
+	cin >> Answer;
+
+	if (toupper(Answer) == 'Y')
+	{
+		Permissions |= enUserPermissions::pDeleteClient;
+	}
+
+	cout << "Update Client? Y/N?";
+	cin >> Answer;
+
+	if (toupper(Answer) == 'Y')
+	{
+		Permissions |= enUserPermissions::pUpdateClients;
+	}
+
+	cout << "Find Client? Y/N?";
+	cin >> Answer;
+
+	if (toupper(Answer) == 'Y')
+	{
+		Permissions |= enUserPermissions::pFindClient;
+	}
+
+
+	cout << "Transaction? Y/N?";
+	cin >> Answer;
+
+	if (toupper(Answer) == 'Y')
+	{
+		Permissions |= enUserPermissions::pTransactions;
+	}
+
+	cout << "Manage Users? Y/N?";
+	cin >> Answer;
+
+	if (toupper(Answer) == 'Y')
+	{
+		Permissions |= enUserPermissions::pManageUsers;
+	}
+
+	return enUserPermissions(Permissions);
+}
+
+void PrintUserRecord(sUser User)
+{
+	cout << "The following is the extracted User record: " << endl << endl;
+
+	cout << left << setw(15) << "User Name" << ": " << User.UserName << endl;
+	cout << left << setw(15) << "Password" << ": " << User.Password << endl;
+	cout << left << setw(15) << "Permissions" << ": " << User.Permissions << endl;
+}
+
+void PrintUsersRecordinOneLine(sUser User)
+{
+	cout << "| ";
+	SetWidthInCenter(15, User.UserName);
+	cout << "| ";
+	SetWidthInCenter(15, User.Password);
+	cout << "| ";
+	SetWidthInCenter(15, to_string(User.Permissions));
+}
+
+void PrintAllUsersData(vector <sUser> vUsers)
+{
+	cout << "                                      Users list (" << vUsers.size() << ") Users(s)." << endl;
+
+	cout << "\n_______________________________________________________";
+	cout << "_________________________________________________\n" << endl;
+	cout << "| ";
+	SetWidthInCenter(15, "User Name");
+	cout << "| ";
+	SetWidthInCenter(15, "Password");
+	cout << "| ";
+	SetWidthInCenter(15, "Permissions");
+	cout << "\n_______________________________________________________";
+	cout << "_________________________________________________\n" << endl;
+
+	for (sUser User : vUsers)
+	{
+		PrintUsersRecordinOneLine(User);
+		cout << endl;
+	}
+
+
+	cout << "\n_______________________________________________________";
+	cout << "_________________________________________________\n" << endl;
+}
+
+void ShowAllUsersScreen()
+{
+	vector <sUser> vUsers = LoadDataUsersFromFile(UserFileName);
+
+	PrintAllUsersData(vUsers);
 }
 
 void PerformMainMenueOption(enMainMenueOptions MainMenueOption)
@@ -695,7 +913,7 @@ void PerformMainMenueOption(enMainMenueOptions MainMenueOption)
 
 	case enMainMenueOptions::eManageUsers:
 		system("cls");
-		ShowMangaeUsersScreen();
+		ShowMangaeUsersMenueScreen();
 		GoBackToMainMenue();
 		break;
 
@@ -708,22 +926,6 @@ void PerformMainMenueOption(enMainMenueOptions MainMenueOption)
 		break;
 
 	}
-}
-
-void GoBackToMainMenue()
-{
-	cout << "\n\n Prees any key to go back to main menue...";
-	system("pause>0");
-	system("cls");
-	ShowMainMenueScreen();
-}
-
-void GoBackToTransactionMenueScreen()
-{
-	cout << "\n\n Press any key to go back to Transactions Menue... ";
-	system("pause>0");
-	system("cls");
-	ShowTransactinsMenueScreen();
 }
 
 void ShowMainMenueScreen()
@@ -745,7 +947,7 @@ void ShowMainMenueScreen()
 
 }
 
-enUserPermissions ReadManageUsersScreen()
+enManageUsersMenueOptions ReadManageUsersScreen()
 {
 	int Number = 0;;
 
@@ -755,35 +957,51 @@ enUserPermissions ReadManageUsersScreen()
 		cin >> Number;
 	} while (Number < 1 || Number > 6);
 
-	return enUserPermissions(Number);
+	return enManageUsersMenueOptions(Number);
 }
 
-void PerformMangeUsersMenueScreen(enUserPermissions UserPermissionsOption)
+void PerformMangeUsersMenueScreen(enManageUsersMenueOptions ManageUsersMenueOption)
 {
-	switch (UserPermissionsOption)
+	switch (ManageUsersMenueOption)
 	{
-	case enUserPermissions::eAll:
+		case enManageUsersMenueOptions::eListUsers:
+		system("cls");
+		ShowAllUsersScreen();
+		GoBackToManageUsersMenueScreen();
 		break;
 
-	case enUserPermissions::pAddNewClient:
+	case  enManageUsersMenueOptions::eAddNewUser:
+		system("cls");
+		GoBackToManageUsersMenueScreen();
 		break;
 
-	case enUserPermissions::pDeleteClient:
+	case  enManageUsersMenueOptions::eDeleteUser:
+		system("cls");
+		GoBackToManageUsersMenueScreen();
 		break;
 
-	case enUserPermissions::pUpdateClients:
+	case  enManageUsersMenueOptions::eUpdateUser:
+		system("cls");
+		GoBackToManageUsersMenueScreen();
 		break;
 
-	case enUserPermissions::pManageUsers:
+	case  enManageUsersMenueOptions::eFindUser:
+		system("cls");
+		GoBackToManageUsersMenueScreen();
+		break;
+
+	case enManageUsersMenueOptions::eMainMenueUsers:
+		system("cls");
+		ShowMainMenueScreen();
 		break;
 
 	default:
+		system("cls");
 		ShowMainMenueScreen();
-
 	}
 }
 
-void ShowManageUsersMenueScreen()
+void ShowMangaeUsersMenueScreen()
 {
 	cout << "===========================================================" << endl;
 	cout << "                  Manage Users Menue Screen                " << endl;
@@ -797,7 +1015,14 @@ void ShowManageUsersMenueScreen()
 	cout << "===========================================================" << endl;
 
 	PerformMangeUsersMenueScreen(ReadManageUsersScreen());
+}
 
+void GoBackToManageUsersMenueScreen()
+{
+	cout << "\n\n Press any key to go back to Manage Users Menue... ";
+	system("pause>0");
+	system("cls");
+	ShowMangaeUsersMenueScreen();
 }
 
 int main()
