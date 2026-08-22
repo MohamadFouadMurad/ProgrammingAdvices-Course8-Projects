@@ -142,9 +142,7 @@
     <ClCompile Include="01-Project 1 - Bank Extention2.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="01-Project 1 - Bank Extention2-Dr.solution.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="01-Project 1 - Bank Extention2-Dr.solution.cpp" />
     <ClCompile Include="02-Project 2 - ATM System-Dr.solution.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
