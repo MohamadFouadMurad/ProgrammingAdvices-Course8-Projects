@@ -13,3 +13,5 @@ obj/
 *.dll
 0
 Client.txt
+Users.txt
+*Dr.solution*
